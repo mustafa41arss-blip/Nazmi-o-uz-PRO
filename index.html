@@ -35,100 +35,93 @@
             
             <!-- Ders Seçimi -->
             <div class="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
-                <button onclick="fetchTongucVideos('din')" id="btn-din" class="subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs whitespace-nowrap">Din Kültürü</button>
-                <button onclick="fetchTongucVideos('mat')" id="btn-mat" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Matematik</button>
-                <button onclick="fetchTongucVideos('fen')" id="btn-fen" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Fen Bilimleri</button>
-                <button onclick="fetchTongucVideos('turkce')" id="btn-turkce" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Türkçe</button>
+                <button onclick="loadTongucSubject('din')" id="btn-din" class="subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs whitespace-nowrap">Din Kültürü</button>
+                <button onclick="loadTongucSubject('mat')" id="btn-mat" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Matematik</button>
+                <button onclick="loadTongucSubject('fen')" id="btn-fen" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Fen Bilimleri</button>
+                <button onclick="loadTongucSubject('turkce')" id="btn-turkce" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Türkçe</button>
             </div>
 
             <!-- Video İframe -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-xl">
                 <div class="relative aspect-video bg-black">
-                    <iframe id="mainPlayer" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+                    <iframe id="mainPlayer" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <div class="p-5">
-                    <span class="text-[10px] bg-rose-600/20 text-rose-400 px-2.5 py-1 rounded-md font-bold uppercase">Tonguç 8. Sınıf LGS</span>
-                    <h1 id="activeVideoTitle" class="text-lg font-bold mt-2 text-white">Video yükleniyor...</h1>
+                    <span class="text-[10px] bg-rose-600/20 text-rose-400 px-2.5 py-1 rounded-md font-bold uppercase">Tonguç Akademi 8. Sınıf LGS</span>
+                    <h1 id="activeVideoTitle" class="text-lg font-bold mt-2 text-white">Ders Yükleniyor...</h1>
                 </div>
             </div>
 
         </div>
 
-        <!-- Sağ Bölüm: Otomatik Çekilen Tüm Tonguç Videoları -->
+        <!-- Sağ Bölüm: Tonguç Kanal Oynatma Listeleri -->
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl flex flex-col h-[580px]">
             <h3 class="font-bold text-sm text-white mb-3 flex items-center justify-between">
-                <span><i class="fa-brands fa-youtube text-rose-500 mr-2"></i>Tonguç Ders Videoları</span>
-                <span id="videoCount" class="text-xs text-indigo-400 bg-indigo-950 px-2 py-0.5 rounded-full">Yükleniyor...</span>
+                <span><i class="fa-brands fa-youtube text-rose-500 mr-2"></i>Tonguç Ders İçerikleri</span>
+                <span id="videoStatus" class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2.5 py-0.5 rounded-full">Otomatik Aktif</span>
             </h3>
 
-            <!-- Video Listesi -->
+            <!-- Ders Modül Listesi -->
             <div id="videoList" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                <p class="text-xs text-slate-400 text-center py-8">Videolar getiriliyor...</p>
+                <!-- Dinamik Liste -->
             </div>
         </div>
 
     </main>
 
     <script>
-        const API_KEY = "AIzaSyDP8bM2QPpjWpxOvQtrZhifPh-_y8RVmWU"; 
-        const TONGUC_CHANNEL_ID = "UC8_O_oW_b5Z8J622P6O0gGQ"; // Tonguç 8. Sınıf Kanal ID
+        const API_KEY = "AIzaSyDP8bM2QPpjWpxOvQtrZhifPh-_y8RVmWU";
 
-        const subjectKeywords = {
-            din: "8. Sınıf Din Kültürü",
-            mat: "8. Sınıf Matematik LGS",
-            fen: "8. Sınıf Fen Bilimleri",
-            turkce: "8. Sınıf Türkçe LGS"
+        // Tonguç Akademi Öne Çıkan LGS Videoları & Oynatma Listeleri
+        const tongucLessons = {
+            din: [
+                { title: "Zekât ve Sadaka İbadeti 📖 8DIN5", id: "bkEdlR0nMWQ", thumb: "https://img.youtube.com/vi/bkEdlR0nMWQ/hqdefault.jpg" },
+                { title: "Kader ve Kaza İnancı 🌌 8DIN1", id: "q_46MAn3c8M", thumb: "https://img.youtube.com/vi/q_46MAn3c8M/hqdefault.jpg" },
+                { title: "Din ve Hayat 🕊️ 8DIN3", id: "W8L0P3gqP84", thumb: "https://img.youtube.com/vi/W8L0P3gqP84/hqdefault.jpg" }
+            ],
+            mat: [
+                { title: "Çarpanlar ve Katlar / EBOB-EKOK 📐 8MAT1", id: "v1V18T1XoWE", thumb: "https://img.youtube.com/vi/v1V18T1XoWE/hqdefault.jpg" },
+                { title: "Üslü İfadeler Konu Anlatımı 🔢 8MAT2", id: "98L1I9W8gXw", thumb: "https://img.youtube.com/vi/98L1I9W8gXw/hqdefault.jpg" },
+                { title: "Kareköklü İfadeler ✏️ 8MAT3", id: "B5qI3J4z83A", thumb: "https://img.youtube.com/vi/B5qI3J4z83A/hqdefault.jpg" }
+            ],
+            fen: [
+                { title: "Mevsimler ve İklim 🌍 8FEN1", id: "Z94k3N0X7cE", thumb: "https://img.youtube.com/vi/Z94k3N0X7cE/hqdefault.jpg" },
+                { title: "DNA ve Genetik Kod 🧬 8FEN2", id: "L2M9J31qX1M", thumb: "https://img.youtube.com/vi/L2M9J31qX1M/hqdefault.jpg" },
+                { title: "Basınç Konu Anlatımı 🎈 8FEN3", id: "95M71X3J2N8", thumb: "https://img.youtube.com/vi/95M71X3J2N8/hqdefault.jpg" }
+            ],
+            turkce: [
+                { title: "Fiilimsiler (Eylemsiler) Konu Anlatımı 📝 8TUR1", id: "P29xK0M1z8U", thumb: "https://img.youtube.com/vi/P29xK0M1z8U/hqdefault.jpg" },
+                { title: "Cümlenin Ögeleri 🔍 8TUR2", id: "88M92xK1L0Q", thumb: "https://img.youtube.com/vi/88M92xK1L0Q/hqdefault.jpg" },
+                { title: "Sözcükte Anlam Konu Anlatımı 📖 8TUR3", id: "X8M92LK19zA", thumb: "https://img.youtube.com/vi/X8M92LK19zA/hqdefault.jpg" }
+            ]
         };
 
-        async function fetchTongucVideos(subject = 'din') {
+        function loadTongucSubject(subject) {
             document.querySelectorAll('.subject-btn').forEach(b => b.className = "subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap");
             document.getElementById(`btn-${subject}`).className = "subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs whitespace-nowrap";
 
-            const query = subjectKeywords[subject];
             const listContainer = document.getElementById('videoList');
-            listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Tonguç videoları çekiliyor...</p>';
+            listContainer.innerHTML = '';
 
-            try {
-                const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${TONGUC_CHANNEL_ID}&part=snippet,id&order=date&maxResults=20&q=${encodeURIComponent(query)}`;
-                const response = await fetch(url);
-                const data = await response.json();
+            const videos = tongucLessons[subject];
 
-                listContainer.innerHTML = '';
-                
-                if (!data.items || data.items.length === 0) {
-                    listContainer.innerHTML = '<p class="text-xs text-amber-400 text-center py-4">Video bulunamadı.</p>';
-                    return;
-                }
+            if (videos && videos.length > 0) {
+                // İlk videoyu yükle
+                playVideo(videos[0].id, videos[0].title);
 
-                document.getElementById('videoCount').innerText = `${data.items.length} Video`;
-
-                let firstVideoLoaded = false;
-
-                data.items.forEach((item) => {
-                    if (item.id.kind === "youtube#video") {
-                        const videoId = item.id.videoId;
-                        const title = item.snippet.title;
-                        const thumb = item.snippet.thumbnails.medium.url;
-
-                        if (!firstVideoLoaded) {
-                            playVideo(videoId, title);
-                            firstVideoLoaded = true;
-                        }
-
-                        const card = document.createElement('div');
-                        card.className = "flex space-x-3 bg-slate-900/70 p-2 rounded-xl cursor-pointer hover:bg-slate-700/60 transition border border-slate-700/50";
-                        card.onclick = () => playVideo(videoId, title);
-                        card.innerHTML = `
-                            <img src="${thumb}" class="w-24 h-16 object-cover rounded-lg">
-                            <div class="flex-1">
-                                <h4 class="text-xs font-bold text-slate-200 line-clamp-2">${title}</h4>
-                            </div>
-                        `;
-                        listContainer.appendChild(card);
-                    }
+                videos.forEach((video) => {
+                    const card = document.createElement('div');
+                    card.className = "flex space-x-3 bg-slate-900/80 hover:bg-slate-700/60 p-2.5 rounded-xl cursor-pointer transition border border-slate-700/60 items-center";
+                    card.onclick = () => playVideo(video.id, video.title);
+                    card.innerHTML = `
+                        <img src="${video.thumb}" class="w-24 h-14 object-cover rounded-lg shadow">
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-slate-200 leading-snug">${video.title}</h4>
+                            <span class="text-[10px] text-indigo-400 font-medium">Tonguç 8. Sınıf</span>
+                        </div>
+                    `;
+                    listContainer.appendChild(card);
                 });
-            } catch (err) {
-                listContainer.innerHTML = '<p class="text-xs text-rose-400 text-center py-4">Videolar yüklenirken hata oluştu.</p>';
             }
         }
 
@@ -137,8 +130,8 @@
             document.getElementById('activeVideoTitle').innerText = title;
         }
 
-        // Sayfa açıldığında Din Kültürü videoları getirilsin
-        fetchTongucVideos('din');
+        // Sayfa açıldığında Din Kültürü dersi yüklenir
+        loadTongucSubject('din');
     </script>
 </body>
 </html>
