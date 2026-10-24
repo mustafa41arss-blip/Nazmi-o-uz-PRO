@@ -3,261 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpa Kampüs Pro - Akıllı Eğitim Platformu</title>
-    <!-- Tailwind CSS -->
+    <title>Morpa Pro - Tonguç LGS Otomatik Video Platformu</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- Navbar -->
-    <header class="bg-slate-900/80 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md">
+    <!-- Header -->
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30">
+                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2.5 rounded-xl shadow-lg">
                     <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
                 </div>
-                <div>
-                    <span class="text-xl font-extrabold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Morpa Pro</span>
-                    <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-semibold ml-2">8. Sınıf LGS</span>
-                </div>
+                <span class="text-xl font-extrabold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Morpa Pro</span>
             </div>
-            
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/60">
-                    <i class="fa-solid fa-fire text-orange-500 mr-2"></i>
-                    <span class="font-bold text-sm" id="streakCount">5</span>
-                    <span class="text-xs text-slate-400 ml-1">Gün Seri</span>
-                </div>
-                <div class="flex items-center bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/60">
-                    <i class="fa-solid fa-bolt text-amber-400 mr-2"></i>
-                    <span class="font-bold text-sm" id="xpCount">1,450</span>
-                    <span class="text-xs text-slate-400 ml-1">XP</span>
-                </div>
+            <div class="flex items-center space-x-3 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                <i class="fa-solid fa-bolt text-amber-400"></i>
+                <span class="font-bold text-sm" id="xpCount">1,450 XP</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Sol & Orta Bölüm (2 Kolon) -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- Sol Bölüm: Video Oynatıcı (2 Kolon) -->
+        <div class="lg:col-span-2 space-y-4">
             
-            <!-- Ders Seçim Barı -->
-            <div class="flex overflow-x-auto space-x-2 pb-2 scrollbar-none">
-                <button onclick="selectSubject('din')" id="sub-din" class="subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm flex items-center space-x-2 shadow-lg shadow-indigo-600/30 whitespace-nowrap">
-                    <i class="fa-solid fa-mosque"></i><span>Din Kültürü</span>
-                </button>
-                <button onclick="selectSubject('mat')" id="sub-mat" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center space-x-2 whitespace-nowrap">
-                    <i class="fa-solid fa-calculator"></i><span>Matematik</span>
-                </button>
-                <button onclick="selectSubject('fen')" id="sub-fen" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center space-x-2 whitespace-nowrap">
-                    <i class="fa-solid fa-flask"></i><span>Fen Bilimleri</span>
-                </button>
-                <button onclick="selectSubject('turkce')" id="sub-turkce" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center space-x-2 whitespace-nowrap">
-                    <i class="fa-solid fa-book-open"></i><span>Türkçe</span>
-                </button>
+            <!-- Ders Seçimi -->
+            <div class="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
+                <button onclick="fetchTongucVideos('din')" id="btn-din" class="subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs whitespace-nowrap">Din Kültürü</button>
+                <button onclick="fetchTongucVideos('mat')" id="btn-mat" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Matematik</button>
+                <button onclick="fetchTongucVideos('fen')" id="btn-fen" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Fen Bilimleri</button>
+                <button onclick="fetchTongucVideos('turkce')" id="btn-turkce" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Türkçe</button>
             </div>
 
-            <!-- Video Oynatıcı Kartı -->
-            <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl overflow-hidden shadow-xl">
+            <!-- Video İframe -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-xl">
                 <div class="relative aspect-video bg-black">
-                    <iframe id="lessonVideo" class="w-full h-full" src="" title="Tonguç LGS Ders Videosu" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe id="mainPlayer" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                 </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <span class="text-xs bg-amber-500/20 text-amber-400 px-3 py-1 rounded-md font-bold uppercase tracking-wider">Tonguç 8. Sınıf LGS</span>
-                            <h1 id="videoTitle" class="text-xl font-bold mt-2 text-white">Yükleniyor...</h1>
-                        </div>
-                        <a href="https://www.youtube.com/@tonguc8" target="_blank" class="bg-rose-600/20 text-rose-400 hover:bg-rose-600/30 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
-                            <i class="fa-brands fa-youtube"></i><span>Tonguç Kanalı</span>
-                        </a>
-                    </div>
-                    <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-700/60">
-                        <div class="flex items-center space-x-2 text-sm text-slate-400">
-                            <i class="fa-solid fa-circle-play text-indigo-400"></i><span id="videoTopicInfo">Konu Anlatımı</span>
-                        </div>
-                        <button onclick="completeVideo()" id="completeVideoBtn" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center space-x-2 text-sm">
-                            <i class="fa-solid fa-check"></i><span>Dersi Tamamla (+50 XP)</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Etkinlikler -->
-            <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-                <h2 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                    <i class="fa-solid fa-brain text-indigo-400"></i>
-                    <span>Soru & Pekiştirme Etkinliği</span>
-                </h2>
-                <p id="activityQuestion" class="text-sm text-slate-300 mb-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/60">Soru yükleniyor...</p>
-                <div id="activityOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Dinamik Butonlar -->
+                <div class="p-5">
+                    <span class="text-[10px] bg-rose-600/20 text-rose-400 px-2.5 py-1 rounded-md font-bold uppercase">Tonguç 8. Sınıf LGS</span>
+                    <h1 id="activeVideoTitle" class="text-lg font-bold mt-2 text-white">Video yükleniyor...</h1>
                 </div>
             </div>
 
         </div>
 
-        <!-- Sağ Kolon: AI Asistan & Başarılar -->
-        <div class="space-y-6">
-            
-            <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 shadow-xl flex flex-col h-[420px]">
-                <div class="flex items-center space-x-3 pb-3 border-b border-slate-700/60">
-                    <div class="bg-indigo-500/20 p-2 rounded-xl text-indigo-400">
-                        <i class="fa-solid fa-robot text-lg"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-white">LGS Ders Asistanı</h3>
-                        <p class="text-xs text-emerald-400">Canlı Rehberlik Aktif</p>
-                    </div>
-                </div>
+        <!-- Sağ Bölüm: Otomatik Çekilen Tüm Tonguç Videoları -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl flex flex-col h-[580px]">
+            <h3 class="font-bold text-sm text-white mb-3 flex items-center justify-between">
+                <span><i class="fa-brands fa-youtube text-rose-500 mr-2"></i>Tonguç Ders Videoları</span>
+                <span id="videoCount" class="text-xs text-indigo-400 bg-indigo-950 px-2 py-0.5 rounded-full">Yükleniyor...</span>
+            </h3>
 
-                <div id="chatMessages" class="flex-1 overflow-y-auto space-y-3 py-4 text-xs">
-                    <div class="bg-slate-700/60 p-3 rounded-xl rounded-tl-none text-slate-200">
-                        Selam! Dersini seçtiğin an Tonguç'un videosu ve soruları otomatik hazır olur. Aklına takılan soruyu sorabilirsin!
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-700/60 flex space-x-2">
-                    <input type="text" id="chatInput" placeholder="Bir soru sor..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
+            <!-- Video Listesi -->
+            <div id="videoList" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                <p class="text-xs text-slate-400 text-center py-8">Videolar getiriliyor...</p>
             </div>
-
         </div>
 
     </main>
 
-    <!-- Script: Ders & Tonguç Video Veritabanı -->
     <script>
-        // Tonguç Akademi 8. Sınıf Ders Veritabanı (Hazır Linkler)
-        const tongucDatabase = {
-            din: {
-                title: "Zekât ve Sadaka İbadeti 📖 8DIN5 #2027LGS",
-                embedId: "bkEdlR0nMWQ",
-                topic: "Din Kültürü - 2. Ünite",
-                question: "Soru: Dinen zengin sayılan Müslümanların yılda bir kez mallarının belli miktarını ihtiyaç sahiplerine vermesine ne denir?",
-                options: [
-                    { text: "A) Zekât", correct: true },
-                    { text: "B) Sadaka-i Cariye", correct: false },
-                    { text: "C) Nisap", correct: false },
-                    { text: "D) İnfak", correct: false }
-                ]
-            },
-            mat: {
-                title: "Çarpanlar ve Katlar / EBOB-EKOK 📐 8MAT1 #2027LGS",
-                embedId: "videoseries?list=PLg43eX_BCh_9L8c0Z4O2x_r1A", // Tonguç Matematik Listesi veya Örnek Video
-                topic: "Matematik - 1. Ünite",
-                question: "Soru: 12 ve 18 sayılarının En Büyük Ortak Böleni (EBOB) kaçtır?",
-                options: [
-                    { text: "A) 3", correct: false },
-                    { text: "B) 6", correct: true },
-                    { text: "C) 12", correct: false },
-                    { text: "D) 36", correct: false }
-                ]
-            },
-            fen: {
-                title: "Mevsimler ve İklim 🌍 8FEN1 #2027LGS",
-                embedId: "videoseries?list=PLg43eX_BCh_9mIq5qS5Z4", // Tonguç Fen Listesi veya Örnek Video
-                topic: "Fen Bilimleri - 1. Ünite",
-                question: "Soru: Dünyanın dönme ekseninin eğik olması aşağıdakilerden hangisine yol açar?",
-                options: [
-                    { text: "A) Gece ve gündüzün oluşmasına", correct: false },
-                    { text: "B) Mevsimlerin oluşmasına", correct: true },
-                    { text: "C) Yer çekimi kuvvetine", correct: false },
-                    { text: "D) Ay tutulmasına", correct: false }
-                ]
-            },
-            turkce: {
-                title: "Fiilimsiler (Eylemsiler) Konu Anlatımı 📝 8TUR1 #2027LGS",
-                embedId: "videoseries?list=PLg43eX_BCh_9rN7A2", // Tonguç Türkçe Listesi veya Örnek Video
-                topic: "Türkçe - 1. Ünite",
-                question: "Soru: 'Koşarak eve gitti' cümlesindeki 'koşarak' kelimesi hangi tür fiilimsidir?",
-                options: [
-                    { text: "A) İsim-Fiil", correct: false },
-                    { text: "B) Sıfat-Fiil", correct: false },
-                    { text: "C) Zarf-Fiil (Bağ-Fiil)", correct: true },
-                    { text: "D) Çekimli Fiil", correct: false }
-                ]
-            }
+        const API_KEY = "AIzaSyDP8bM2QPpjWpxOvQtrZhifPh-_y8RVmWU"; 
+        const TONGUC_CHANNEL_ID = "UC8_O_oW_b5Z8J622P6O0gGQ"; // Tonguç 8. Sınıf Kanal ID
+
+        const subjectKeywords = {
+            din: "8. Sınıf Din Kültürü",
+            mat: "8. Sınıf Matematik LGS",
+            fen: "8. Sınıf Fen Bilimleri",
+            turkce: "8. Sınıf Türkçe LGS"
         };
 
-        let xp = 1450;
+        async function fetchTongucVideos(subject = 'din') {
+            document.querySelectorAll('.subject-btn').forEach(b => b.className = "subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap");
+            document.getElementById(`btn-${subject}`).className = "subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs whitespace-nowrap";
 
-        function selectSubject(subKey) {
-            // Buton Tasarımlarını Değiştir
-            document.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.className = "subject-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center space-x-2 whitespace-nowrap";
-            });
-            document.getElementById(`sub-${subKey}`).className = "subject-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-sm flex items-center space-x-2 shadow-lg shadow-indigo-600/30 whitespace-nowrap";
+            const query = subjectKeywords[subject];
+            const listContainer = document.getElementById('videoList');
+            listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Tonguç videoları çekiliyor...</p>';
 
-            // Tonguç Verilerini Çek ve Yükle
-            const data = tongucDatabase[subKey];
-            document.getElementById('lessonVideo').src = `https://www.youtube.com/embed/${data.embedId}?autoplay=1`;
-            document.getElementById('videoTitle').innerText = data.title;
-            document.getElementById('videoTopicInfo').innerText = data.topic;
-            document.getElementById('activityQuestion').innerText = data.question;
+            try {
+                const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${TONGUC_CHANNEL_ID}&part=snippet,id&order=date&maxResults=20&q=${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                const data = await response.json();
 
-            // Şıkları Oluştur
-            const optContainer = document.getElementById('activityOptions');
-            optContainer.innerHTML = '';
-            data.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "bg-slate-900 hover:bg-slate-700/80 border border-slate-700 p-3 rounded-xl text-xs font-bold text-slate-200 text-left transition";
-                btn.innerText = opt.text;
-                btn.onclick = () => {
-                    if(opt.correct) {
-                        alert("Tebrikler! Doğru cevap. +25 XP kazandın!");
-                        xp += 25;
-                        document.getElementById('xpCount').innerText = xp.toLocaleString();
-                    } else {
-                        alert("Yanlış cevap, tekrar dene!");
+                listContainer.innerHTML = '';
+                
+                if (!data.items || data.items.length === 0) {
+                    listContainer.innerHTML = '<p class="text-xs text-amber-400 text-center py-4">Video bulunamadı.</p>';
+                    return;
+                }
+
+                document.getElementById('videoCount').innerText = `${data.items.length} Video`;
+
+                let firstVideoLoaded = false;
+
+                data.items.forEach((item) => {
+                    if (item.id.kind === "youtube#video") {
+                        const videoId = item.id.videoId;
+                        const title = item.snippet.title;
+                        const thumb = item.snippet.thumbnails.medium.url;
+
+                        if (!firstVideoLoaded) {
+                            playVideo(videoId, title);
+                            firstVideoLoaded = true;
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = "flex space-x-3 bg-slate-900/70 p-2 rounded-xl cursor-pointer hover:bg-slate-700/60 transition border border-slate-700/50";
+                        card.onclick = () => playVideo(videoId, title);
+                        card.innerHTML = `
+                            <img src="${thumb}" class="w-24 h-16 object-cover rounded-lg">
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-slate-200 line-clamp-2">${title}</h4>
+                            </div>
+                        `;
+                        listContainer.appendChild(card);
                     }
-                };
-                optContainer.appendChild(btn);
-            });
+                });
+            } catch (err) {
+                listContainer.innerHTML = '<p class="text-xs text-rose-400 text-center py-4">Videolar yüklenirken hata oluştu.</p>';
+            }
         }
 
-        function completeVideo() {
-            xp += 50;
-            document.getElementById('xpCount').innerText = xp.toLocaleString();
-            alert("Harika! Tonguç dersini bitirdin. +50 XP eklendi!");
+        function playVideo(id, title) {
+            document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            document.getElementById('activeVideoTitle').innerText = title;
         }
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const chat = document.getElementById('chatMessages');
-            if(!input.value.trim()) return;
-
-            const userMsg = document.createElement('div');
-            userMsg.className = "bg-indigo-600 text-white p-3 rounded-xl rounded-tr-none ml-auto max-w-[85%]";
-            userMsg.innerText = input.value;
-            chat.appendChild(userMsg);
-
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            setTimeout(() => {
-                const aiMsg = document.createElement('div');
-                aiMsg.className = "bg-slate-700/60 p-3 rounded-xl rounded-tl-none text-slate-200 max-w-[85%]";
-                aiMsg.innerText = "Tonguç dersiyle alakalı aklına takılan yerleri yanıtlayabilirim! Çalışmaya devam et!";
-                chat.appendChild(aiMsg);
-                chat.scrollTop = chat.scrollHeight;
-            }, 800);
-        }
-
-        // Sayfa ilk açıldığında Din Kültürü dersini yükle
-        selectSubject('din');
+        // Sayfa açıldığında Din Kültürü videoları getirilsin
+        fetchTongucVideos('din');
     </script>
 </body>
 </html>
