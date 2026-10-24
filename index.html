@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpa Pro - Tonguç LGS Otomatik Video Platformu</title>
+    <title>Morpa Pro - Tonguç LGS Video Platformu</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
     <!-- Main -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Sol Bölüm: Video Oynatıcı (2 Kolon) -->
+        <!-- Sol Bölüm: Video Oynatıcı -->
         <div class="lg:col-span-2 space-y-4">
             
             <!-- Ders Seçimi -->
@@ -41,38 +41,39 @@
                 <button onclick="loadTongucSubject('turkce')" id="btn-turkce" class="subject-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs whitespace-nowrap">Türkçe</button>
             </div>
 
-            <!-- Video İframe -->
+            <!-- Video Oynatıcı Kutusu -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-xl">
                 <div class="relative aspect-video bg-black">
                     <iframe id="mainPlayer" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
-                <div class="p-5">
-                    <span class="text-[10px] bg-rose-600/20 text-rose-400 px-2.5 py-1 rounded-md font-bold uppercase">Tonguç Akademi 8. Sınıf LGS</span>
-                    <h1 id="activeVideoTitle" class="text-lg font-bold mt-2 text-white">Ders Yükleniyor...</h1>
+                <div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <span class="text-[10px] bg-rose-600/20 text-rose-400 px-2.5 py-1 rounded-md font-bold uppercase">Tonguç Akademi 8. Sınıf</span>
+                        <h1 id="activeVideoTitle" class="text-base font-bold mt-2 text-white">Ders Yükleniyor...</h1>
+                    </div>
+                    <a id="youtubeDirectBtn" href="#" target="_blank" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 whitespace-nowrap shadow-lg">
+                        <i class="fa-brands fa-youtube text-sm"></i><span>YouTube'da Aç</span>
+                    </a>
                 </div>
             </div>
 
         </div>
 
-        <!-- Sağ Bölüm: Tonguç Kanal Oynatma Listeleri -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl flex flex-col h-[580px]">
+        <!-- Sağ Bölüm: Ders Listesi -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl flex flex-col h-[520px]">
             <h3 class="font-bold text-sm text-white mb-3 flex items-center justify-between">
-                <span><i class="fa-brands fa-youtube text-rose-500 mr-2"></i>Tonguç Ders İçerikleri</span>
-                <span id="videoStatus" class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2.5 py-0.5 rounded-full">Otomatik Aktif</span>
+                <span><i class="fa-brands fa-youtube text-rose-500 mr-2"></i>Ders Videoları</span>
+                <span class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2.5 py-0.5 rounded-full">Aktif</span>
             </h3>
 
-            <!-- Ders Modül Listesi -->
             <div id="videoList" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                <!-- Dinamik Liste -->
+                <!-- List -->
             </div>
         </div>
 
     </main>
 
     <script>
-        const API_KEY = "AIzaSyDP8bM2QPpjWpxOvQtrZhifPh-_y8RVmWU";
-
-        // Tonguç Akademi Öne Çıkan LGS Videoları & Oynatma Listeleri
         const tongucLessons = {
             din: [
                 { title: "Zekât ve Sadaka İbadeti 📖 8DIN5", id: "bkEdlR0nMWQ", thumb: "https://img.youtube.com/vi/bkEdlR0nMWQ/hqdefault.jpg" },
@@ -106,7 +107,6 @@
             const videos = tongucLessons[subject];
 
             if (videos && videos.length > 0) {
-                // İlk videoyu yükle
                 playVideo(videos[0].id, videos[0].title);
 
                 videos.forEach((video) => {
@@ -117,7 +117,7 @@
                         <img src="${video.thumb}" class="w-24 h-14 object-cover rounded-lg shadow">
                         <div class="flex-1">
                             <h4 class="text-xs font-bold text-slate-200 leading-snug">${video.title}</h4>
-                            <span class="text-[10px] text-indigo-400 font-medium">Tonguç 8. Sınıf</span>
+                            <span class="text-[10px] text-indigo-400 font-medium">Tonguç Akademi</span>
                         </div>
                     `;
                     listContainer.appendChild(card);
@@ -126,11 +126,12 @@
         }
 
         function playVideo(id, title) {
-            document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            // Otomatik oynatma (autoplay) mobilde engellendiği için kaldırıldı, direkt oynatıcı yüklenir
+            document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}`;
             document.getElementById('activeVideoTitle').innerText = title;
+            document.getElementById('youtubeDirectBtn').href = `https://www.youtube.com/watch?v=${id}`;
         }
 
-        // Sayfa açıldığında Din Kültürü dersi yüklenir
         loadTongucSubject('din');
     </script>
 </body>
