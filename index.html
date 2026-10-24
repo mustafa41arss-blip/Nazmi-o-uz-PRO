@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpa Pro - YouTube Destekli Akıllı Kampüs</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        },
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-purple {
+            box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.4);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.4);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-30 glass-panel border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo & Sınıf Seçici -->
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('dashboard')">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-purple-600 to-indigo-500 flex items-center justify-center text-white font-black text-xl shadow-lg glow-purple">
+                            M+
+                        </div>
+                        <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent">
+                            Morpa<span class="text-indigo-600 dark:text-indigo-400">PRO</span>
+                        </span>
+                    </div>
+
+                    <!-- Sınıf Seçici -->
+                    <div class="hidden md:flex items-center bg-slate-200 dark:bg-slate-800/80 rounded-lg p-1 text-sm font-medium">
+                        <select id="classSelector" class="bg-transparent border-none text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer px-2 py-1">
+                            <option value="5" class="dark:bg-slate-800">5. Sınıf</option>
+                            <option value="6" class="dark:bg-slate-800">6. Sınıf</option>
+                            <option value="7" class="dark:bg-slate-800">7. Sınıf</option>
+                            <option value="8" selected class="dark:bg-slate-800">8. Sınıf (LGS)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Navigasyon -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active px-3.5 py-2 rounded-lg font-medium text-sm transition text-brand-600 dark:text-brand-500 bg-brand-50 dark:bg-brand-900/30">
+                        <i class="fa-solid fa-house mr-1.5"></i> Ana Panel
+                    </button>
+                    <button onclick="switchTab('videos')" id="nav-videos" class="nav-btn px-3.5 py-2 rounded-lg font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        <i class="fa-brands fa-youtube mr-1.5 text-red-500"></i> YouTube Dersler
+                    </button>
+                    <button onclick="switchTab('activities')" id="nav-activities" class="nav-btn px-3.5 py-2 rounded-lg font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-puzzle-piece mr-1.5 text-amber-500"></i> Etkinlikler
+                    </button>
+                    <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="nav-btn px-3.5 py-2 rounded-lg font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-trophy mr-1.5 text-yellow-500"></i> Liderlik
+                    </button>
+                </nav>
+
+                <!-- Profili & Gamification Bar -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- Seri (Streak) -->
+                    <div class="flex items-center gap-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2.5 py-1.5 rounded-full font-bold text-xs sm:text-sm" title="Günlük Çalışma Serisi">
+                        <i class="fa-solid fa-fire animate-pulse"></i>
+                        <span id="streakCount">7</span> Gün
+                    </div>
+
+                    <!-- XP Puanı -->
+                    <div class="hidden sm:flex items-center gap-1.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1.5 rounded-full font-bold text-sm" title="Toplam Puan">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span id="userXP">1,850</span> XP
+                    </div>
+
+                    <!-- Tema Değiştirici -->
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                    </button>
+
+                    <!-- Profil Kartı -->
+                    <div class="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-800">
+                        <div class="relative">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Mustafa" alt="Profil" class="w-9 h-9 rounded-full bg-brand-100 border-2 border-brand-500">
+                            <span class="absolute -bottom-1 -right-1 bg-brand-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">Lvl 8</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBİL ALT NAVİGASYON -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex justify-around py-2.5 text-slate-400 text-xs">
+        <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 hover:text-brand-400">
+            <i class="fa-solid fa-house text-base"></i> Panel
+        </button>
+        <button onclick="switchTab('videos')" class="flex flex-col items-center gap-1 text-red-400 hover:text-red-300">
+            <i class="fa-brands fa-youtube text-base"></i> Videolar
+        </button>
+        <button onclick="switchTab('activities')" class="flex flex-col items-center gap-1 text-amber-400 hover:text-amber-300">
+            <i class="fa-solid fa-puzzle-piece text-base"></i> Etkinlik
+        </button>
+        <button onclick="switchTab('leaderboard')" class="flex flex-col items-center gap-1 text-yellow-400">
+            <i class="fa-solid fa-trophy text-base"></i> Liderlik
+        </button>
+    </div>
+
+    <!-- ANA İÇERİK ALANI -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-12 md:mb-0 space-y-8">
+
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="space-y-8">
+            
+            <!-- Karşılama Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-700 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 shadow-2xl glow-purple">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-2 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold tracking-wide border border-white/20">
+                            <i class="fa-brands fa-youtube text-red-400"></i> YouTube Entegre Eğitim Sistemi
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                            Hoş Geldin Mustafa! 👋
+                        </h1>
+                        <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+                            Morpa Kampüs Pro ile popüler YouTube eğitim videolarını izle, ardından video içeriğine özel interaktif alıştırmaları çözerek LGS'ye hazırlan!
+                        </p>
+                    </div>
+
+                    <button onclick="switchTab('videos')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-xl transition-all duration-300 flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-brands fa-youtube text-xl"></i> Ders Videolarını Aç
+                    </button>
+                </div>
+            </div>
+
+            <!-- DERS FİLTRE BUTONLARI -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-brand-500"></i> Ders Kategorileri
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="subjectFilterGrid">
+                    <!-- JS Dolduracak -->
+                </div>
+            </div>
+
+            <!-- ÖNE ÇIKAN YOUTUBE VİDEOLAR -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fa-brands fa-youtube text-red-500"></i> Öne Çıkan Ders Videoları
+                        </h2>
+                        <p class="text-xs text-slate-500">Videoyu izle ve hemen peşinden alıştırmaları tamamla</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="dashboardVideoGrid">
+                    <!-- JS Dinamik Video Kartları -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- YOUTUBE VIDEO PLAYER TAB -->
+        <section id="tab-videos" class="hidden space-y-6">
+            
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-brands fa-youtube text-red-500"></i> YouTube Ders Oynatıcısı
+                    </h2>
+                    <p class="text-sm text-slate-500">Popüler LGS videolarını izle veya kendi YouTube video linkini ekle</p>
+                </div>
+
+                <!-- Özel YouTube Link Ekleme Modülü -->
+                <div class="w-full lg:w-auto flex items-center gap-2 bg-slate-200 dark:bg-slate-900 p-2 rounded-2xl border border-slate-300 dark:border-slate-800">
+                    <input type="text" id="customYoutubeUrl" placeholder="Örn: https://www.youtube.com/watch?v=..." class="w-full lg:w-72 bg-transparent text-xs px-3 py-1.5 focus:outline-none dark:text-white">
+                    <button onclick="addCustomYoutubeVideo()" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shrink-0 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Video Yükle
+                    </button>
+                </div>
+            </div>
+
+            <!-- VİDEO DERS OYNATICI VE LİSTE -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Sol Kolon: YouTube Embed Iframe -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="glass-panel rounded-3xl overflow-hidden border border-slate-700 shadow-2xl bg-black">
+                        
+                        <!-- YOUTUBE EMBED IFRAME -->
+                        <div class="relative aspect-video w-full bg-black">
+                            <iframe id="youtubeIframe" class="w-full h-full border-0" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+
+                        <!-- Video Bilgileri ve Etkinliğe Geçiş Butonu -->
+                        <div class="p-5 bg-slate-900 text-white border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <span id="activeVideoSubject" class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Matematik</span>
+                                <h3 id="activeVideoTitle" class="font-bold text-lg mt-1 text-white">8. Sınıf Üslü İfadeler ve Özdeşlikler</h3>
+                                <p id="activeVideoChannel" class="text-xs text-slate-400">Kanal: LGS Hazırlık • YouTube Embed</p>
+                            </div>
+
+                            <button onclick="startPostVideoActivities()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-lg glow-emerald">
+                                <i class="fa-solid fa-puzzle-piece text-amber-300"></i> VİDEOYU TAMAMLADIM, ETKİNLİKLERE GEÇ →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Not Alma Alanı -->
+                    <div class="glass-panel p-5 rounded-2xl border space-y-3">
+                        <div class="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
+                            <h4 class="font-bold text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square text-amber-500"></i> Video Notlarım
+                            </h4>
+                            <span class="text-[10px] text-slate-400">Ders esnasında not al</span>
+                        </div>
+                        <textarea id="studentNotes" rows="3" placeholder="Videodaki önemli formülleri buraya yazabilirsin..." class="w-full p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none dark:text-white"></textarea>
+                        <div class="flex justify-end">
+                            <button onclick="saveNotes()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition">
+                                <i class="fa-solid fa-floppy-disk mr-1"></i> Notu Kaydet (+10 XP)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Kolon: YouTube Ders Kütüphanesi -->
+                <div class="space-y-4">
+                    <div class="glass-panel p-5 rounded-2xl border space-y-4">
+                        <h4 class="font-bold text-sm flex items-center gap-2 border-b pb-3 border-slate-200 dark:border-slate-800">
+                            <i class="fa-brands fa-youtube text-red-500"></i> Kayıtlı YouTube Dersleri
+                        </h4>
+                        <div class="space-y-3" id="youtubePlaylist">
+                            <!-- JS Dolduracak -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- POST-VIDEO ACTIVITIES TAB -->
+        <section id="tab-activities" class="hidden space-y-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-xl">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold mb-2">
+                        <i class="fa-solid fa-puzzle-piece"></i> Videoya Özel İnteraktif Etkinlikler
+                    </div>
+                    <h2 class="text-2xl font-bold" id="activityHeaderTitle">Matematik: Üslü İfadeler Etkinlikleri</h2>
+                    <p class="text-xs text-slate-400">İzlediğin YouTube videosuna özel hazırlanmış pekiştirme alıştırmaları</p>
+                </div>
+
+                <!-- Adım Göstergeleri -->
+                <div class="flex items-center gap-2 bg-slate-800/80 p-2 rounded-2xl border border-slate-700">
+                    <div id="actStep1" class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow">1</div>
+                    <div class="w-4 h-0.5 bg-slate-700"></div>
+                    <div id="actStep2" class="w-9 h-9 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm">2</div>
+                    <div class="w-4 h-0.5 bg-slate-700"></div>
+                    <div id="actStep3" class="w-9 h-9 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm">3</div>
+                    <div class="w-4 h-0.5 bg-slate-700"></div>
+                    <div id="actStep4" class="w-9 h-9 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm">4</div>
+                </div>
+            </div>
+
+            <!-- ETKİNLİK İÇERİK CONTAINER -->
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl border space-y-6 min-h-[420px]" id="activityContainer">
+                
+                <!-- ETKİNLİK 1: KAVRAM EŞLEŞTİRME -->
+                <div id="activity-1" class="space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-brand-500 uppercase tracking-wider">Etkinlik 1 / 4</span>
+                            <h3 class="text-xl font-bold">Kavram & Tanım Eşleştirme Kartları</h3>
+                            <p class="text-xs text-slate-500">Sol taraftaki terim ile sağ taraftaki doğru tanımı eşleştir</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full">+40 XP</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="matchingGrid"></div>
+                </div>
+
+                <!-- ETKİNLİK 2: DOĞRU / YANLIŞ -->
+                <div id="activity-2" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-brand-500 uppercase tracking-wider">Etkinlik 2 / 4</span>
+                            <h3 class="text-xl font-bold">Doğru mu? Yanlış mı? Oyunu</h3>
+                            <p class="text-xs text-slate-500">Cümleyi oku ve doğru seçeneği işaretle</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full">+30 XP</span>
+                    </div>
+
+                    <div class="max-w-xl mx-auto space-y-6 text-center py-6">
+                        <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-md">
+                            <p id="tfQuestionText" class="text-lg font-bold leading-relaxed">
+                                "Tabanları aynı olan üslü ifadeler çarpılırken üsler toplanır."
+                            </p>
+                        </div>
+
+                        <div class="flex justify-center gap-6">
+                            <button onclick="answerTF(true)" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                                <i class="fa-solid fa-check text-xl"></i> DOĞRU
+                            </button>
+                            <button onclick="answerTF(false)" class="flex-1 py-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                                <i class="fa-solid fa-xmark text-xl"></i> YANLIŞ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETKİNLİK 3: BOŞLUK DOLDURMA -->
+                <div id="activity-3" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-brand-500 uppercase tracking-wider">Etkinlik 3 / 4</span>
+                            <h3 class="text-xl font-bold">Cümle İçi Boşluk Doldurma</h3>
+                            <p class="text-xs text-slate-500">Aşağıdaki kelimelerden doğru olanı seçerek cümleyi tamamla</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full">+35 XP</span>
+                    </div>
+
+                    <div class="max-w-xl mx-auto space-y-6 py-4">
+                        <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border text-base font-medium leading-loose text-center">
+                            Bir sayının negatif kuvveti alındığında sayının <span id="fillBlankTarget" class="px-3 py-1 bg-brand-500/20 border-b-2 border-brand-500 font-bold text-brand-500"> [ ? ] </span> çarpmaya göre tersi alınır.
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-3" id="blankWordsContainer"></div>
+                    </div>
+                </div>
+
+                <!-- ETKİNLİK 4: ANALİTİK LGS SORU ÇÖZÜMÜ -->
+                <div id="activity-4" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-brand-500 uppercase tracking-wider">Son Etkinlik 4 / 4</span>
+                            <h3 class="text-xl font-bold">Analitik Soru Çözümü</h3>
+                            <p class="text-xs text-slate-500">Videoda öğrendiklerinle LGS tarzı soruyu yanıtla</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full">+50 XP</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div id="quizQuestionText" class="p-5 rounded-2xl bg-slate-100 dark:bg-slate-800/60 font-semibold text-base leading-relaxed">
+                            2<sup>-3</sup> ifadesinin değeri kaçtır?
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="actQuizOptions"></div>
+
+                        <!-- AI Çözüm Açıklama Kutusu -->
+                        <div id="aiExplanationBox" class="hidden p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-xs sm:text-sm space-y-2">
+                            <div class="font-bold text-purple-400 flex items-center gap-2">
+                                <i class="fa-solid fa-brain"></i> Yapay Zeka Çözüm Açıklaması:
+                            </div>
+                            <div id="aiExplanationText" class="text-slate-300 leading-relaxed"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Alt İlerleme Butonları -->
+            <div class="flex justify-between items-center">
+                <button onclick="switchTab('videos')" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 font-semibold text-xs transition">
+                    ← Videoya Dön
+                </button>
+                <button id="nextActStepBtn" onclick="nextActivityStep()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition flex items-center gap-2 shadow-lg">
+                    Sonraki Etkinliğe Geç <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- LEADERBOARD TAB -->
+        <section id="tab-leaderboard" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-panel p-6 rounded-2xl border space-y-5">
+                    <div>
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-award text-amber-500"></i> Başarı Rozetlerin
+                        </h2>
+                        <p class="text-xs text-slate-500">Videoları izledikçe ve etkinlik çözdükçe açılır</p>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="badgesGrid"></div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border space-y-5">
+                    <div>
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-500"></i> Liderlik Sıralaması
+                        </h2>
+                        <p class="text-xs text-slate-500">Haftalık en çok XP toplayan öğrenciler</p>
+                    </div>
+                    <div class="space-y-2" id="fullLeaderboard"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- AI ASİSTAN SOHBET WIDGET -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button id="aiChatToggle" onclick="toggleAIChat()" class="group relative flex items-center gap-3 bg-gradient-to-r from-brand-600 to-purple-600 text-white px-4 py-3 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 glow-purple">
+            <div class="relative">
+                <i class="fa-solid fa-robot text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-brand-600"></span>
+            </div>
+            <span class="font-semibold text-sm pr-1">Morpa AI Asistan</span>
+        </button>
+
+        <div id="aiChatWindow" class="hidden absolute bottom-16 right-0 w-[90vw] sm:w-[380px] h-[480px] glass-panel rounded-2xl border shadow-2xl flex flex-col overflow-hidden transition-all duration-300 border-brand-500/30">
+            <div class="bg-gradient-to-r from-brand-600 to-purple-600 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-brain text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm leading-tight">Morpa Akıllı Asistan</div>
+                        <div class="text-[11px] text-indigo-200">7/24 Ders Soru Çözücü</div>
+                    </div>
+                </div>
+                <button onclick="toggleAIChat()" class="text-white/80 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs sm:text-sm">
+                <div class="flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center shrink-0 text-xs">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-slate-200 dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-slate-800 dark:text-slate-200">
+                        Merhaba Mustafa! YouTube videolarını izlerken takıldığın her soruyu veya kuralı bana sorabilirsin! 🚀
+                    </div>
+                </div>
+            </div>
+
+            <form onsubmit="handleChatSubmit(event)" class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                <input type="text" id="chatInput" placeholder="Soru sor veya kural iste..." class="flex-1 bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-xs font-semibold transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT VERİLERİ VE MANTIK -->
+    <script>
+        // Ders Kategorileri
+        const subjects = [
+            { id: 'matematik', name: 'Matematik', icon: 'fa-calculator', color: 'from-blue-600 to-indigo-600' },
+            { id: 'fen', name: 'Fen Bilimleri', icon: 'fa-flask', color: 'from-emerald-600 to-teal-600' },
+            { id: 'turkce', name: 'Türkçe', icon: 'fa-pen-nib', color: 'from-amber-600 to-orange-600' },
+            { id: 'inkilap', name: 'T.C. İnkılap', icon: 'fa-landmark', color: 'from-rose-600 to-red-600' }
+        ];
+
+        // Gerçek YouTube Ders Videoları ve Bağlı Etkinlik Verileri
+        let youtubeVideos = [
+            {
+                id: 'yt-mat-1',
+                youtubeId: 'pS41sP_m2U4', // Örnek YouTube Video ID
+                title: '8. Sınıf LGS Matematik - Üslü İfadeler',
+                subject: 'matematik',
+                subjectName: 'Matematik',
+                channel: 'Tonguç Akademi / LGS',
+                duration: '14:20',
+                thumbnailColor: 'from-blue-600 to-indigo-700',
+                matches: [
+                    { id: 1, left: "2³", right: "8" },
+                    { id: 2, left: "5⁰", right: "1" },
+                    { id: 3, left: "3⁻²", right: "1/9" }
+                ],
+                tfQuestion: "Tabanları aynı olan üslü ifadeler çarpılırken üsler toplanır.",
+                tfAnswer: true,
+                blankWord: "payda",
+                quiz: {
+                    q: "2⁻³ ifadesinin değeri kaçtır?",
+                    options: ["-8", "-6", "1/8", "1/6"],
+                    correct: 2,
+                    explanation: "Negatif üs, tabandaki sayıyı çarpmaya göre tersine çevirir. Yani 2⁻³ = (1/2)³ = 1/8 olur."
+                }
+            },
+            {
+                id: 'yt-fen-1',
+                youtubeId: '3uFThp2d-04',
+                title: '8. Sınıf Fen - DNA ve Genetik Kod',
+                subject: 'fen',
+                subjectName: 'Fen Bilimleri',
+                channel: 'Hocalara Geldik / LGS',
+                duration: '12:45',
+                thumbnailColor: 'from-emerald-600 to-teal-700',
+                matches: [
+                    { id: 1, left: "Adenin", right: "Timin ile eşleşir" },
+                    { id: 2, left: "Guanin", right: "Sitozin ile eşleşir" },
+                    { id: 3, left: "Nükleotid", right: "DNA'nın Yapı Birimi" }
+                ],
+                tfQuestion: "DNA çift zincirli ve sarmal bir yapıya sahiptir.",
+                tfAnswer: true,
+                blankWord: "Gen",
+                quiz: {
+                    q: "DNA'nın görev birimi aşağıdakilerden hangisidir?",
+                    options: ["Nükleotid", "Gen", "Kromozom", "Organel"],
+                    correct: 1,
+                    explanation: "DNA'nın yapı birimi 'Nükleotid', görev birimi ise 'Gen'dir."
+                }
+            },
+            {
+                id: 'yt-turkce-1',
+                youtubeId: '82k8S5G1L_A',
+                title: '8. Sınıf Türkçe - Fiilimsiler (Eylemsiler)',
+                subject: 'turkce',
+                subjectName: 'Türkçe',
+                channel: 'LGS Türkçe Dersleri',
+                duration: '11:10',
+                thumbnailColor: 'from-amber-600 to-orange-700',
+                matches: [
+                    { id: 1, left: "İsim-Fiil", right: "-mak, -me, -ış" },
+                    { id: 2, left: "Sıfat-Fiil", right: "-an, -ası, -mez" },
+                    { id: 3, left: "Zarf-Fiil", right: "-ken, -alı, -esiye" }
+                ],
+                tfQuestion: "Fiilimsiler fiil çekim eklerini alabilirler.",
+                tfAnswer: false,
+                blankWord: "isim",
+                quiz: {
+                    q: "'Koşan çocuklar neşeyle güldü.' cümlesindeki fiilimsi türü hangisidir?",
+                    options: ["İsim-Fiil", "Sıfat-Fiil", "Zarf-Fiil", "Çekimli Fiil"],
+                    correct: 1,
+                    explanation: "'Koş-an' sözcüğündeki '-an' eki sıfat-fiil ekidir ve ismi nitelemiştir."
+                }
+            },
+            {
+                id: 'yt-inkilap-1',
+                youtubeId: 'R9xTf5rI9eI',
+                title: '8. Sınıf İnkılap - Bir Kahraman Doğuyor',
+                subject: 'inkilap',
+                subjectName: 'T.C. İnkılap',
+                channel: 'Sosyal Bilgiler Durağı',
+                duration: '09:50',
+                thumbnailColor: 'from-rose-600 to-red-700',
+                matches: [
+                    { id: 1, left: "Selanik", right: "Mustafa Kemal'in Doğduğu Şehir" },
+                    { id: 2, left: "Manastır", right: "Askeri İdadiyi Okuduğu Şehir" },
+                    { id: 3, left: "İstanbul", right: "Harp Akademisi" }
+                ],
+                tfQuestion: "Mustafa Kemal'in doğduğu Selanik, çok uluslu ve zengin bir liman kentiydi.",
+                tfAnswer: true,
+                blankWord: "Kültürel",
+                quiz: {
+                    q: "Mustafa Kemal'in fikir hayatının gelişmesinde hangi şehir etkili olmamıştır?",
+                    options: ["Selanik", "Manastır", "Sofya", "Tokyo"],
+                    correct: 3,
+                    explanation: "Mustafa Kemal Selanik, Manastır, İstanbul ve Sofya şehirlerinde bulunmuştur."
+                }
+            }
+        ];
+
+        let state = {
+            user: { xp: 1850, streak: 7 },
+            activeTab: 'dashboard',
+            activeVideo: youtubeVideos[0],
+            selectedSubjectFilter: 'all',
+            activeActivityStep: 1,
+            selectedMatchLeft: null
+        };
+
+        const badgesData = [
+            { title: 'YouTube Kurdu', icon: 'fa-brands fa-youtube', color: 'text-red-500', desc: '5+ YouTube Ders Videosu İzlendi' },
+            { title: 'Test Şampiyonu', icon: 'fa-solid fa-circle-check', color: 'text-emerald-500', desc: 'Etkinlikleri Eksiksiz Tamamladın' },
+            { title: '7 Günlük Seri', icon: 'fa-solid fa-fire', color: 'text-amber-500', desc: '1 Hafta Kesintisiz Çalışma' }
+        ];
+
+        const leaderboardData = [
+            { rank: 1, name: 'Zeynep K.', xp: 2650, avatar: 'Zeynep' },
+            { rank: 2, name: 'Ahmet T.', xp: 2100, avatar: 'Ahmet' },
+            { rank: 3, name: 'Mustafa Y. (Sen)', xp: 1850, avatar: 'Mustafa', isUser: true },
+            { rank: 4, name: 'Elif S.', xp: 1420, avatar: 'Elif' }
+        ];
+
+        window.onload = function() {
+            renderSubjectFilters();
+            renderDashboardVideoGrid();
+            renderYoutubePlaylist();
+            renderBadges();
+            renderLeaderboard();
+
+            selectYoutubeVideo(youtubeVideos[0].id);
+        };
+
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            
+            const activeSec = document.getElementById(`tab-${tabName}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-600', 'dark:text-brand-500', 'bg-brand-50', 'dark:bg-brand-900/30');
+            });
+
+            const activeNavBtn = document.getElementById(`nav-${tabName}`);
+            if (activeNavBtn) {
+                activeNavBtn.classList.add('text-brand-600', 'dark:text-brand-500', 'bg-brand-50', 'dark:bg-brand-900/30');
+            }
+        }
+
+        // Kategori Filtre Butonları
+        function renderSubjectFilters() {
+            const grid = document.getElementById('subjectFilterGrid');
+            if (!grid) return;
+
+            let html = `
+                <button onclick="filterBySubject('all')" class="p-4 rounded-2xl border text-left transition flex items-center gap-3 bg-brand-600 text-white border-brand-500 shadow-md">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-border-all"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">Tüm Dersler</div>
+                        <div class="text-[10px] opacity-80">${youtubeVideos.length} Video</div>
+                    </div>
+                </button>
+            `;
+
+            subjects.forEach(sub => {
+                const count = youtubeVideos.filter(v => v.subject === sub.id).length;
+                html += `
+                <button onclick="filterBySubject('${sub.id}')" class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/80 hover:border-brand-500 text-left transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${sub.color} text-white flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid ${sub.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">${sub.name}</div>
+                        <div class="text-[10px] text-slate-500">${count} Video</div>
+                    </div>
+                </button>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function filterBySubject(subId) {
+            state.selectedSubjectFilter = subId;
+            renderDashboardVideoGrid();
+        }
+
+        function renderDashboardVideoGrid() {
+            const grid = document.getElementById('dashboardVideoGrid');
+            if (!grid) return;
+
+            const filtered = state.selectedSubjectFilter === 'all' 
+                ? youtubeVideos 
+                : youtubeVideos.filter(v => v.subject === state.selectedSubjectFilter);
+
+            let html = '';
+            filtered.forEach(v => {
+                html += `
+                <div class="glass-panel rounded-2xl overflow-hidden border hover:border-brand-500 transition-all duration-300 group">
+                    <div class="relative aspect-video bg-gradient-to-br ${v.thumbnailColor} p-4 flex flex-col justify-between text-white">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-black/50 backdrop-blur-md text-[10px] font-bold px-2.5 py-1 rounded-full">${v.subjectName}</span>
+                            <span class="bg-red-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <i class="fa-brands fa-youtube"></i> YouTube
+                            </span>
+                        </div>
+                        <button onclick="openYoutubeVideo('${v.id}')" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md mx-auto flex items-center justify-center text-xl group-hover:scale-125 transition-all shadow-lg">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </button>
+                        <div class="flex justify-between items-center text-[11px] text-white/80">
+                            <span><i class="fa-regular fa-clock mr-1"></i>${v.duration}</span>
+                            <span>${v.channel}</span>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <h3 class="font-bold text-sm line-clamp-1">${v.title}</h3>
+                        <button onclick="openYoutubeVideo('${v.id}')" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-brand-600 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-youtube text-red-500"></i> Videoyu İzle & Etkinlik Çöz
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function renderYoutubePlaylist() {
+            const playlist = document.getElementById('youtubePlaylist');
+            if (!playlist) return;
+
+            let html = '';
+            youtubeVideos.forEach(v => {
+                html += `
+                <div onclick="selectYoutubeVideo('${v.id}')" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-brand-500 cursor-pointer flex items-center gap-3 transition">
+                    <div class="w-10 h-10 rounded-lg bg-red-600/20 text-red-500 flex items-center justify-center shrink-0">
+                        <i class="fa-brands fa-youtube text-lg"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold truncate">${v.title}</div>
+                        <div class="text-[10px] text-slate-500">${v.channel} • ${v.duration}</div>
+                    </div>
+                </div>
+                `;
+            });
+
+            playlist.innerHTML = html;
+        }
+
+        function selectYoutubeVideo(id) {
+            const v = youtubeVideos.find(item => item.id === id);
+            if (!v) return;
+
+            state.activeVideo = v;
+            
+            // YouTube Iframe URL Güncelleme
+            const iframe = document.getElementById('youtubeIframe');
+            iframe.src = `https://www.youtube.com/embed/${v.youtubeId}?autoplay=0`;
+
+            document.getElementById('activeVideoTitle').innerText = v.title;
+            document.getElementById('activeVideoSubject').innerText = v.subjectName;
+            document.getElementById('activeVideoChannel').innerText = `Kanal: ${v.channel} • YouTube Embed`;
+            document.getElementById('activityHeaderTitle').innerText = `${v.title} - Etkinlik Paketi`;
+
+            initPostVideoActivities(v);
+        }
+
+        function openYoutubeVideo(id) {
+            selectYoutubeVideo(id);
+            switchTab('videos');
+        }
+
+        // Kendi YouTube Bağlantısını Ekleme Modülü
+        function addCustomYoutubeVideo() {
+            const input = document.getElementById('customYoutubeUrl').value.trim();
+            if (!input) {
+                alert("Lütfen geçerli bir YouTube video linki veya ID yapıştırın!");
+                return;
+            }
+
+            // YouTube ID Ayıklama (watch?v= or youtu.be/)
+            let ytId = '';
+            if (input.includes('v=')) {
+                ytId = input.split('v=')[1].split('&')[0];
+            } else if (input.includes('youtu.be/')) {
+                ytId = input.split('youtu.be/')[1].split('?')[0];
+            } else {
+                ytId = input; // Doğrudan ID yazılmışsa
+            }
+
+            const newVideo = {
+                id: 'custom-' + Date.now(),
+                youtubeId: ytId,
+                title: 'Özel Eklenen YouTube Ders Videosu',
+                subject: 'matematik',
+                subjectName: 'Özel Video',
+                channel: 'Kullanıcı Ekledi',
+                duration: 'Özel',
+                thumbnailColor: 'from-purple-600 to-indigo-700',
+                matches: [
+                    { id: 1, left: "Videodaki Konu", right: "Özel Ders Analizi" },
+                    { id: 2, left: "Önemli Kural", right: "Püf Nokta" }
+                ],
+                tfQuestion: "Bu YouTube videosunu dikkatle izledim ve anladım.",
+                tfAnswer: true,
+                blankWord: "doğru",
+                quiz: {
+                    q: "Videodaki konuyla ilgili genel değerlendirme sorusu:",
+                    options: ["Konuyu İyice Anladım", "Tekrar İzlemeliyim", "Soruları Çözebiliyorum", "Hepsi"],
+                    correct: 3,
+                    explanation: "Tebrikler! Özel videonuzu başarıyla izleyip etkinliği tamamladınız."
+                }
+            };
+
+            youtubeVideos.unshift(newVideo);
+            renderDashboardVideoGrid();
+            renderYoutubePlaylist();
+            selectYoutubeVideo(newVideo.id);
+            document.getElementById('customYoutubeUrl').value = '';
+            addXP(50);
+            triggerConfetti();
+            alert("Özel YouTube videonuz yüklendi! +50 XP");
+        }
+
+        function saveNotes() {
+            addXP(10);
+            triggerConfetti();
+            alert("Ders notlarınız başarıyla kaydedildi! +10 XP");
+        }
+
+        function startPostVideoActivities() {
+            switchTab('activities');
+            loadActivityStep(1);
+        }
+
+        function initPostVideoActivities(video) {
+            // Eşleştirme
+            const matchGrid = document.getElementById('matchingGrid');
+            if (matchGrid && video.matches) {
+                let htmlLeft = '<div class="space-y-3">';
+                let htmlRight = '<div class="space-y-3">';
+
+                video.matches.forEach(m => {
+                    htmlLeft += `<button onclick="matchClick('left', ${m.id}, this)" class="match-left-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-left font-bold text-sm hover:border-brand-500 transition">${m.left}</button>`;
+                    htmlRight += `<button onclick="matchClick('right', ${m.id}, this)" class="match-right-btn w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-left font-bold text-sm hover:border-brand-500 transition">${m.right}</button>`;
+                });
+
+                matchGrid.innerHTML = htmlLeft + '</div>' + htmlRight + '</div>';
+            }
+
+            // Doğru Yanlış
+            if (video.tfQuestion) {
+                document.getElementById('tfQuestionText').innerText = `"${video.tfQuestion}"`;
+            }
+
+            // Boşluk Doldurma
+            const wordsContainer = document.getElementById('blankWordsContainer');
+            if (wordsContainer) {
+                wordsContainer.innerHTML = `
+                    <button onclick="answerBlank('yanlış')" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-brand-500 hover:text-white rounded-xl font-bold text-xs transition">yanlış</button>
+                    <button onclick="answerBlank('${video.blankWord}')" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-brand-500 hover:text-white rounded-xl font-bold text-xs transition">${video.blankWord || 'doğru'}</button>
+                `;
+            }
+
+            // Quiz
+            const quizContainer = document.getElementById('actQuizOptions');
+            if (quizContainer && video.quiz) {
+                document.getElementById('quizQuestionText').innerText = video.quiz.q;
+                let html = '';
+                video.quiz.options.forEach((opt, idx) => {
+                    html += `<button onclick="answerActQuiz(${idx})" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-brand-500 hover:text-white font-bold text-sm text-left transition">${String.fromCharCode(65 + idx)}) ${opt}</button>`;
+                });
+                quizContainer.innerHTML = html;
+
+                document.getElementById('aiExplanationBox').classList.add('hidden');
+            }
+        }
+
+        function matchClick(side, id, btn) {
+            if (side === 'left') {
+                document.querySelectorAll('.match-left-btn').forEach(b => b.classList.remove('border-brand-500', 'bg-brand-500/20'));
+                btn.classList.add('border-brand-500', 'bg-brand-500/20');
+                state.selectedMatchLeft = id;
+            } else if (side === 'right' && state.selectedMatchLeft !== null) {
+                if (state.selectedMatchLeft === id) {
+                    btn.className = "w-full p-4 rounded-xl border-2 border-emerald-500 bg-emerald-500/20 text-emerald-400 font-bold text-sm text-left";
+                    addXP(15);
+                    triggerConfetti();
+                } else {
+                    alert("Eşleşme Hatalı!");
+                }
+                state.selectedMatchLeft = null;
+            }
+        }
+
+        function answerTF(userAns) {
+            if (userAns === state.activeVideo.tfAnswer) {
+                addXP(30);
+                triggerConfetti();
+                alert("Tebrikler, Doğru Cevap! +30 XP");
+            } else {
+                alert("Üzgünüm, cevap yanlış.");
+            }
+        }
+
+        function answerBlank(word) {
+            document.getElementById('fillBlankTarget').innerText = word;
+            addXP(35);
+            triggerConfetti();
+            alert("Boşluk Tamamlandı! +35 XP");
+        }
+
+        function answerActQuiz(idx) {
+            const expBox = document.getElementById('aiExplanationBox');
+            const expText = document.getElementById('aiExplanationText');
+
+            if (idx === state.activeVideo.quiz.correct) {
+                addXP(50);
+                triggerConfetti();
+                alert("Harika! Soru Doğru Çözüldü. +50 XP");
+            } else {
+                alert("Yanlış Şık. Yapay Zeka Çözümünü İnceleyin.");
+            }
+
+            if (expBox && state.activeVideo.quiz.explanation) {
+                expText.innerText = state.activeVideo.quiz.explanation;
+                expBox.classList.remove('hidden');
+            }
+        }
+
+        function nextActivityStep() {
+            if (state.activeActivityStep < 4) {
+                state.activeActivityStep++;
+                loadActivityStep(state.activeActivityStep);
+            } else {
+                alert("Tüm etkinlikleri tamamladınız! Harika bir çalışma oldu.");
+                switchTab('dashboard');
+            }
+        }
+
+        function loadActivityStep(step) {
+            state.activeActivityStep = step;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`activity-${i}`).classList.add('hidden');
+                const stepEl = document.getElementById(`actStep${i}`);
+                if (stepEl) {
+                    stepEl.className = i <= step ? "w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow" : "w-9 h-9 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm";
+                }
+            }
+            document.getElementById(`activity-${step}`).classList.remove('hidden');
+        }
+
+        function renderLeaderboard() {
+            const full = document.getElementById('fullLeaderboard');
+            if (!full) return;
+
+            let html = '';
+            leaderboardData.forEach(u => {
+                html += `
+                <div class="flex items-center justify-between p-2.5 rounded-xl ${u.isUser ? 'bg-brand-500/10 border border-brand-500/30' : 'bg-slate-100/50 dark:bg-slate-800/30'}">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-sm w-5 text-center ${u.rank === 1 ? 'text-amber-500' : 'text-slate-500'}">#${u.rank}</span>
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar}" class="w-8 h-8 rounded-full bg-slate-700">
+                        <div class="text-xs font-bold">${u.name}</div>
+                    </div>
+                    <span class="text-xs font-extrabold text-emerald-500">${u.xp} XP</span>
+                </div>`;
+            });
+            full.innerHTML = html;
+        }
+
+        function renderBadges() {
+            const grid = document.getElementById('badgesGrid');
+            if (!grid) return;
+
+            let html = '';
+            badgesData.forEach(b => {
+                html += `
+                <div class="p-4 rounded-xl border text-center space-y-2 glass-panel border-purple-500/30">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-2xl ${b.color}">
+                        <i class="${b.icon}"></i>
+                    </div>
+                    <div class="font-bold text-xs">${b.title}</div>
+                    <div class="text-[10px] text-slate-500">${b.desc}</div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function addXP(amount) {
+            state.user.xp += amount;
+            document.getElementById('userXP').innerText = state.user.xp.toLocaleString();
+        }
+
+        function triggerConfetti() {
+            confetti({ particleCount: 70, spread: 60, origin: { y: 0.8 } });
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function toggleAIChat() {
+            document.getElementById('aiChatWindow').classList.toggle('hidden');
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `
+                <div class="flex items-start justify-end gap-2.5">
+                    <div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%]">${msg}</div>
+                </div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                container.innerHTML += `
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-200 dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none max-w-[80%]">İzlediğin YouTube dersi veya takıldığın formüllerle ilgili sana açıklama yapabilirim! 🚀</div>
+                    </div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
